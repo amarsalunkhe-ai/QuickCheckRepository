@@ -1,4 +1,9 @@
-﻿SELECT
+--------------------------------------------------------------------------------------------------------
+-- Position Details SQL
+--------------------------------------------------------------------------------------------------------
+
+
+SELECT
 TO_CHAR(HAPFV.EFFECTIVE_START_DATE,'YYYY/MM/DD') AS "EffectiveStartDate_HCM",
 'Y' "Replace_First_EffectiveStartDate",
 TO_CHAR(HAPFV.EFFECTIVE_END_DATE,'YYYY/MM/DD') AS "EffectiveEndDate_HCM",
@@ -23,8 +28,7 @@ HAPF.STANDARD_WORKING_HOURS AS "StandardWorkingHours_HCM",
 (SELECT DISTINCT MEANING FROM HCM_LOOKUPS WHERE LOOKUP_TYPE = 'FREQUENCY' AND LOOKUP_CODE = HAPF.STANDARD_WORKING_FREQUENCY) AS "StandardWorkingFrequency_HCM",
 HAPF.WORKING_HOURS as "WorkingHours",
 (SELECT DISTINCT MEANING FROM HCM_LOOKUPS WHERE LOOKUP_TYPE = 'FREQUENCY' AND LOOKUP_CODE = HAPF.FREQUENCY) 
-AS "WorkingFrequency",
-HAPF.attribute1 as "AlternateCharacterPositionName"
+AS "WorkingFrequency"
 FROM 
 HR_ALL_POSITIONS_F_VL HAPF,
 HR_ALL_POSITIONS_F_VL HAPFV,
@@ -43,6 +47,10 @@ and trunc(sysdate) between HAPFV.effective_start_date and HAPFV.effective_end_da
 and trunc(sysdate) between HAOTL.effective_start_date and HAOTL.effective_end_date
 and trunc(sysdate) between PJF.effective_start_date and PJF.effective_end_date
 and trunc(sysdate) between HLAFV.effective_start_date and HLAFV.effective_end_date
+--------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------
+-- Parent Position
 --------------------------------------------------------------------------------------------------------
 SELECT DISTINCT
 HAPF.POSITION_CODE AS "PositionCode_HCM",
@@ -70,6 +78,8 @@ AND HIKM.SOURCE_SYSTEM_ID LIKE '%M5_%'
 */
 AND PPHF.POSITION_HIERARCHY_ID= HIKM.SURROGATE_ID
 ----------------------------------------------------
+
+
 SELECT   
 HAPF.POSITION_CODE AS POSITIONCODE_HCM,
 HAP.NAME AS NAME_HCM,
@@ -2179,4 +2189,5 @@ and trunc(:assignment_start_date) between papf.effective_start_date and papf.eff
 -- asgt.assignment_number in ( 'E'||:Person_number, 'ET'||:Person_number)
  and asgt.effective_start_date = :assignment_start_date
 order by 1 desc
+
 ------------------------------------------------------------------------------
