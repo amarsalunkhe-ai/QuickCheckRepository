@@ -110,6 +110,8 @@ AND HIKM.SOURCE_SYSTEM_OWNER = 'HRC_SQLLOADER'
 AND PPE.POSITION_EXTRA_INFO_ID = HIKM.SURROGATE_ID
 ----------------------------------------------------
 ----------------------------------------------------
+-- Position EFF
+----------------------------------------------------
 SELECT HAPF.POSITION_CODE as "POSITION_CODE_HCM",
 HAP.NAME AS "NAME_HCM",
 PPE.POEI_INFORMATION1 "BMvendor_HCM", 
@@ -134,7 +136,12 @@ AND HAP.LANGUAGE = 'US'
 AND TRUNC(SYSDATE) BETWEEN PPE.EFFECTIVE_START_DATE AND PPE.EFFECTIVE_END_DATE
 AND TRUNC(SYSDATE) BETWEEN HAPF.EFFECTIVE_START_DATE AND HAPF.EFFECTIVE_END_DATE
 AND TRUNC(SYSDATE) BETWEEN HAP.EFFECTIVE_START_DATE AND HAP.EFFECTIVE_END_DATE
---AND  HAPF.POSITION_CODE='30014712'
+--AND  HAPF.POSITION_CODE='xxxxx'
+----------------------------------------------------
+
+
+----------------------------------------------------
+-- Organization tree load file
 ----------------------------------------------------
 select 'METADATA|OrganizationTreeNode|TreeStructureCode|TreeCode|TreeVersionName|OrganizationName|ClassificationCode|ReferenceTreeCode|ReferenceTreeVersionName|ParentOrganizationName|ParentClassificationCode|DeleteChildNodesFlag' AA from dual
 union 
@@ -172,12 +179,20 @@ AND haotl.EFFECTIVE_END_DATE = hao.EFFECTIVE_END_DATE
 AND hac.CLASSIFICATION_CODE = 'FUN_BUSINESS_UNIT'
 and trunc(sysdate) between hao.EFFECTIVE_START_DATE and hao.EFFECTIVE_END_DATE
 -------------------------------------------------------------------------------------------------
-select 'MERGE|User|' || user_id|| '|' || username  || '|ADD|SG_HR_ADMIN_GENPOP_ONLY_W2_DATA' AAA
+
+-------------------------------------------------------------------------------------------------
+-- Add Role to a user
+-------------------------------------------------------------------------------------------------
+select 'MERGE|User|' || user_id|| '|' || username  || '|ADD|ROLE_CODE_DATA' AAA
 from per_users 
 where username in (
-'redouane.layaida@socgen.com')
+'user.name@abc.com')
 union
 select 'METADATA|User|UserID|Username|AddRemoveRole|RoleCommonName' AAA from dual
+-------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-- Lookup Codes and Translations
 -------------------------------------------------------------------------------------------------
 SELECT HAUFT.NAME AS BU_CODE,
 HAUFT.NAME AS BU_DESCRIPTION,
@@ -283,6 +298,10 @@ and flv.lookup_type in (
 )
 */
 ------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------
+-- Value set transalations
+-------------------------------------------------------------------------------------------------
 select * from fnd_vs_values_tl
 where value_id in (select distinct value_id from fnd_vs_values_b
 where value_set_id in (select distinct value_set_id from FND_VS_VALUE_SETS
@@ -293,6 +312,9 @@ WHERE FVTL.LANGUAGE IN ('US', 'FR', 'RO')
 AND FLVB.VALUE_ID = FVTL.VALUE_ID
 AND FVVS.VALUE_SET_ID = FLVB.VALUE_SET_ID
 ------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------
+-- Lookups and translations
 ------------------------------------------------------------------------------------------------------------
 select flv.lookup_type,  FLV.LOOKUP_CODE, 
 FLV.LANGUAGE, FLV.MEANING, FLV.DESCRIPTION, 
@@ -372,6 +394,8 @@ and flv.lookup_type in (
 )
 */
 ------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
+-- Organization Tree load
 ------------------------------------------------------------------------------------------------------------
 select 
 'METADATA|OrganizationTreeNode|TreeStructureCode|TreeCode|TreeVersionName|OrganizationName|ClassificationCode|ReferenceTreeCode|ReferenceTreeVersionName|ParentOrganizationName|ParentClassificationCode|DeleteChildNodesFlag' AA from dual
@@ -495,7 +519,10 @@ and flv.lookup_type in (
 --'DISABILITY_STATUS'
 )
 */
---------------------------
+
+------------------------------------------------------------------------------------------------------------
+-- Add role to user
+------------------------------------------------------------------------------------------------------------
 select 'METADATA|User|PersonNumber' AA from Dual
 UNION
 select 'MERGE|User|'  ||  papf.person_number AA 
@@ -504,16 +531,7 @@ where pu.person_id = papf.person_id
 and trunc(sysdate) between papf.effective_start_date and papf.effective_end_date
 and pu.username in (
 -- Enter usernames here
-'benjamin.dupont-ext@socgen.com',
-'jean---marc.myt@socgen.com',
-'julien.champigny-ext@socgen.com',
-'juliette.beylle@socgen.com',
-'heidi.feyssaguet-ext@socgen.com',
-'emma.amigues-ext@socgen.com',
-'maxime.bayle-ext@socgen.com',
-'pierric.millet-ext@socgen.com ',
-'justine.verdeyrout-ext@socgen.com',
-'stephane.zalucki-ext@socgen.com'
+'User.name@abc.com'
 )
 UNION
 select 'METADATA|UserRole|PersonNumber|AddRemoveRole|RoleCommonName' AAA from dual
@@ -529,16 +547,7 @@ and trunc(sysdate) between papf.effective_start_date and papf.effective_end_date
 and pu.username 
  in (
 -- Enter usernames here
-'benjamin.dupont-ext@socgen.com',
-'jean---marc.myt@socgen.com',
-'julien.champigny-ext@socgen.com',
-'juliette.beylle@socgen.com',
-'heidi.feyssaguet-ext@socgen.com',
-'emma.amigues-ext@socgen.com',
-'maxime.bayle-ext@socgen.com',
-'pierric.millet-ext@socgen.com ',
-'justine.verdeyrout-ext@socgen.com',
-'stephane.zalucki-ext@socgen.com'
+'User.name@abc.com'
 )
 ----------------------------------------------------
 select 'METADATA|User|PersonNumber' AA from Dual
@@ -549,8 +558,7 @@ where pu.person_id = papf.person_id
 and trunc(sysdate) between papf.effective_start_date and papf.effective_end_date
 and pu.username in (
 -- Enter usernames here
-'benjamin.dupont-ext@socgen.com',
-'stephane.zalucki-ext@socgen.com'
+'User.name@abc.com'
 )
 UNION
 select 'METADATA|UserRole|PersonNumber|AddRemoveRole|RoleCommonName' AAA from dual
@@ -566,8 +574,7 @@ and trunc(sysdate) between papf.effective_start_date and papf.effective_end_date
 and pu.username 
  in (
 -- Enter usernames here
-'benjamin.dupont-ext@socgen.com',
-'stephane.zalucki-ext@socgen.com'
+'User.name@abc.com'
 )
 -------------------------------------------------
 select 
@@ -2191,3 +2198,4 @@ and trunc(:assignment_start_date) between papf.effective_start_date and papf.eff
 order by 1 desc
 
 ------------------------------------------------------------------------------
+
