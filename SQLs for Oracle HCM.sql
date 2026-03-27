@@ -2199,3 +2199,47 @@ order by 1 desc
 
 ------------------------------------------------------------------------------
 
+
+------------------------------------------------------------------------------
+-- Fast formula DBI
+-- <Note 1919091.1> FUSION HCM: How to Get the Most Current List of DBIs from Your Database
+-- <Note 2690351.2> Information Center: Fusion HCM Extracts, UE and DBI tab.
+------------------------------------------------------------------------------
+select
+fat.module_name, 
+fdg.base_group_name, 
+fdg.group_name, 
+fdi.base_user_name, 
+fdi.user_name, 
+fdi.description, 
+fdi.data_type, 
+fdi.definition_text,
+fue.base_user_entity_name, 
+fue.description description_1, 
+fr.base_route_name, 
+ --fr.text, 
+ '' as text, 
+fr.multi_row_flag,
+(select substr(sys.stragg(','||base_context_name),2) context from fusion.ff_route_context_usages i, fusion.ff_contexts_vl j where i.context_id = j.context_id and i.route_id = fr.route_id ) contexts_used,
+(select substr(sys.stragg(','||parameter_name),2) context from fusion.ff_route_parameters where route_id = fr.route_id) parameters,
+(select substr(sys.stragg(','||base_context_name),2) context from fusion.ff_dbi_groups_vl a, fusion.ff_dbi_usages b, fusion.ff_database_items_vl c, fusion.ff_contexts_vl d where a.context_id = d.context_id
+and a.dbi_group_id = b.dbi_group_id and b.dbi_id = c.database_item_id and c.user_entity_id = fue.user_entity_id) contexts_set
+
+
+from fusion.ff_database_items_vl fdi, fusion.ff_dbi_usages fdu, fusion.ff_dbi_groups_vl fdg, fusion.fnd_appl_taxonomy_vl fat,
+fusion.ff_user_entities_vl fue, fusion.ff_routes_vl fr
+
+
+where fdi.module_id is not null
+and fdi.database_item_id = fdu.dbi_id(+)
+and fdu.dbi_group_id = fdg.dbi_group_id(+)
+and fdi.module_id = fat.module_id
+and fdi.user_entity_id = fue.user_entity_id
+and fue.route_id = fr.route_id
+and fdi.module_id is not null
+--order by module_name, fdi.base_user_name
+
+
+------------------------------------------------------------------------------
+
+
